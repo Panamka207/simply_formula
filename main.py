@@ -22,6 +22,7 @@ lanes = [150, 300, 450]
 # ]
 
 score = 0
+highscore = 0
 
 # Игрок
 player_width = 60
@@ -37,11 +38,14 @@ enemy_width = 60
 enemy_height = 100
 enemy_speed = 5
 
+speed_incrase_timer = 0
+
 # Таймер спавна
 spawn_event = pygame.USEREVENT + 1
 pygame.time.set_timer(spawn_event, 1000)
 
 running = True
+game_over = False
 
 while running:
     clock.tick(60)
@@ -57,6 +61,11 @@ while running:
                 current_lane -= 1
             if event.key == pygame.K_RIGHT and current_lane < 2:
                 current_lane += 1
+            if game_over and event.key == pygame.K_r:
+                game_over = False
+                score = 0
+                enemy_speed = 5
+                enemies.clear()
 
         if event.type == spawn_event:
             lane = random.choice(lanes)
@@ -70,42 +79,72 @@ while running:
 
             enemies.append(enemy)
 
-    # Обновление позиции игрока
-    player_rect.x = lanes[current_lane] - player_width // 2 + 1
+    if not game_over:
+        speed_incrase_timer += 1
 
-    # Обновление врагов
-    for enemy in enemies:
-        enemy['rect'].y += enemy_speed
+        if speed_incrase_timer > 300:
+            enemy_speed = 5 + score * 0.1
+            speed_incrase_timer = 0
 
-        # Подсчет очков
-        if enemy['rect'].y > player_y and not enemy['counted']:
-            score += 1
-            enemy['counted'] = True
+        # Обновление позиции игрока
+        player_rect.x = lanes[current_lane] - player_width // 2 + 1
 
-    # Проверка столкновения
-    for enemy in enemies:
-        if player_rect.colliderect(enemy['rect']):
-            print("Игра окончена")
-            running = False
+        # Обновление врагов
+        for enemy in enemies:
+            enemy['rect'].y += enemy_speed
 
-    # Удаление врагов за экраном
-    enemies = [e for e in enemies if e['rect'].y < HEIGHT]
+            # Подсчет очков
+            if enemy['rect'].y > player_y and not enemy['counted']:
+                score += 1
+                enemy['counted'] = True
 
-    # Отрисовка линий
-    for lane in lanes:
-        pygame.draw.line(screen, (50, 50, 50), (lane, 0),
-                         (lane, HEIGHT), 2)
+        # Проверка столкновения
+        for enemy in enemies:
+            if player_rect.colliderect(enemy['rect']):
+                print("Игра окончена")
+                game_over = True
+                if score > highscore:
+                    highscore = score
 
-    # Отрисовка игрока
-    pygame.draw.rect(screen, (255, 0, 0), player_rect)
+        # Удаление врагов за экраном
+        enemies = [e for e in enemies if e['rect'].y < HEIGHT]
 
-    # Отрисовка врагов
-    for enemy in enemies:
-        pygame.draw.rect(screen, (255, 255, 255), enemy['rect'])
+        # Отрисовка линий
+        for lane in lanes:
+            pygame.draw.line(screen, (50, 50, 50), (lane, 0),
+                             (lane, HEIGHT), 2)
 
-    font = pygame.font.SysFont(None, 40)
-    score_text = font.render(f'Счет: {score}', True, (255, 255, 255))
-    screen.blit(score_text, (20, 20))
+        # Отрисовка игрока
+        pygame.draw.rect(screen, (255, 0, 0), player_rect)
+
+        # Отрисовка врагов
+        for enemy in enemies:
+            pygame.draw.rect(screen, (255, 255, 255), enemy['rect'])
+
+        font = pygame.font.SysFont(None, 40)
+        score_text = font.render(f'Счет: {score}', True, (255, 255, 255))
+        screen.blit(score_text, (20, 20))
+
+        font_big = pygame.font.SysFont(None, 80)
+        font_small = pygame.font.SysFont(None, 40)
+
+    if game_over:
+        game_over_text = font_big.render('Игра окончена', True, (255, 0, 0))
+        restart_text = font_small.render(
+            'Нажмите R чтобы начать заново', True, (255, 255, 255))
+        score_text = font_small.render(
+            f'Счет: {score}', True, (255, 255, 255))
+        highscore_text = font_small.render(
+            f'Рекорд: {highscore}', True, (255, 255, 255))
+
+        screen.blit(game_over_text, (WIDTH // 2 -
+                    game_over_text.get_width() // 2, 50))
+        screen.blit(score_text, (WIDTH // 2 -
+                    score_text.get_width() // 2, 300))
+        screen.blit(highscore_text, (WIDTH // 2 -
+                    highscore_text.get_width() // 2, 350))
+        screen.blit(restart_text, (WIDTH // 2 -
+                    restart_text.get_width() // 2, 550))
 
     pygame.display.flip()
 

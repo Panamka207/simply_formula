@@ -138,13 +138,13 @@ while running:
             f'Рекорд: {highscore}', True, (255, 255, 255))
 
         screen.blit(game_over_text, (WIDTH // 2 -
-                    game_over_text.get_width() // 2, 250))
+                    game_over_text.get_width() // 2, 50))
         screen.blit(score_text, (WIDTH // 2 -
-                    score_text.get_width() // 2, 350))
+                    score_text.get_width() // 2, 300))
         screen.blit(highscore_text, (WIDTH // 2 -
-                    highscore_text.get_width() // 2, 400))
+                    highscore_text.get_width() // 2, 350))
         screen.blit(restart_text, (WIDTH // 2 -
-                    restart_text.get_width() // 2, 500))
+                    restart_text.get_width() // 2, 550))
 
     pygame.display.flip()
 

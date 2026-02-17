@@ -21,6 +21,8 @@ lanes = [150, 300, 450]
 #     lane_width * 2 + lane_width // 2
 # ]
 
+score = 0
+
 # Игрок
 player_width = 60
 player_height = 100
@@ -58,25 +60,36 @@ while running:
 
         if event.type == spawn_event:
             lane = random.choice(lanes)
-            enemy_rect = pygame.Rect(
-                lane - enemy_width // 2 + 1, -100, enemy_width, enemy_height)
-            enemies.append(enemy_rect)
+            enemy_rect = pygame.Rect(0, -100, enemy_width, enemy_height)
+            enemy_rect.centerx = lane
+
+            enemy = {
+                'rect': enemy_rect,
+                'counted': False
+            }
+
+            enemies.append(enemy)
 
     # Обновление позиции игрока
     player_rect.x = lanes[current_lane] - player_width // 2 + 1
 
     # Обновление врагов
     for enemy in enemies:
-        enemy.y += enemy_speed
+        enemy['rect'].y += enemy_speed
+
+        # Подсчет очков
+        if enemy['rect'].y > player_y and not enemy['counted']:
+            score += 1
+            enemy['counted'] = True
 
     # Проверка столкновения
     for enemy in enemies:
-        if player_rect.colliderect(enemy):
+        if player_rect.colliderect(enemy['rect']):
             print("Игра окончена")
             running = False
 
     # Удаление врагов за экраном
-    enemies = [e for e in enemies if e.y < HEIGHT]
+    enemies = [e for e in enemies if e['rect'].y < HEIGHT]
 
     # Отрисовка линий
     for lane in lanes:
@@ -88,7 +101,11 @@ while running:
 
     # Отрисовка врагов
     for enemy in enemies:
-        pygame.draw.rect(screen, (255, 255, 255), enemy)
+        pygame.draw.rect(screen, (255, 255, 255), enemy['rect'])
+
+    font = pygame.font.SysFont(None, 40)
+    score_text = font.render(f'Счет: {score}', True, (255, 255, 255))
+    screen.blit(score_text, (20, 20))
 
     pygame.display.flip()
 

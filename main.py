@@ -23,9 +23,6 @@ lanes = [150, 300, 450]
 #     lane_width * 2 + lane_width // 2
 # ]
 
-score = 0
-highscore = 0
-
 # Игрок
 player_width = 60
 player_height = 100
@@ -51,12 +48,21 @@ game_over = False
 
 
 def load_highscore():
-    if os.path.exists('highscore.json'):
-        with open('highscore.json', 'r') as f:
+    if os.path.exists('save.json'):
+        with open('save.json', 'r') as f:
             data = json.load(f)
             return data.get('highscore', 0)
     return 0
 
+
+def save_highscore(highscore):
+    data = {'highscore': highscore}
+    with open('save.json', 'w') as f:
+        json.dump(data, f)
+
+
+score = 0
+highscore = load_highscore()
 
 while running:
     clock.tick(60)
@@ -116,6 +122,7 @@ while running:
                 game_over = True
                 if score > highscore:
                     highscore = score
+                    save_highscore(highscore)
 
         # Удаление врагов за экраном
         enemies = [e for e in enemies if e['rect'].y < HEIGHT]

@@ -22,6 +22,7 @@ lanes = [150, 300, 450]
 # ]
 
 score = 0
+highscore = 0
 
 # Игрок
 player_width = 60
@@ -96,6 +97,8 @@ while running:
         if player_rect.colliderect(enemy['rect']):
             print("Игра окончена")
             game_over = False
+            if score > highscore:
+                highscore = score
 
     # Удаление врагов за экраном
     enemies = [e for e in enemies if e['rect'].y < HEIGHT]

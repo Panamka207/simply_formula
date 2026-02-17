@@ -1,6 +1,8 @@
 import pygame
 import random
 import sys
+import json
+import os
 
 pygame.init()
 
@@ -46,6 +48,15 @@ pygame.time.set_timer(spawn_event, 1000)
 
 running = True
 game_over = False
+
+
+def load_highscore():
+    if os.path.exists('highscore.json'):
+        with open('highscore.json', 'r') as f:
+            data = json.load(f)
+            return data.get('highscore', 0)
+    return 0
+
 
 while running:
     clock.tick(60)

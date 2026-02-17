@@ -47,23 +47,34 @@ running = True
 game_over = False
 
 
-def load_highscore():
+def load_data():
     if os.path.exists('save.json'):
         with open('save.json', 'r') as f:
             data = json.load(f)
             return data.get('highscore', 0)
-    return 0
+    return None
 
 
-def save_highscore(highscore):
-    data = {'highscore': highscore}
+def save_data(data):
+    data = {'highscore': data}
     with open('save.json', 'w') as f:
         json.dump(data, f)
 
 
 score = 0
-highscore = load_highscore()
+highscore = load_data()
 
+# Загрузка профиля
+data = load_data()
+if data is not None:
+    nickname = input("Введите ваш никнейм: ")
+    data = {'nickname': nickname, 'highscore': 0}
+    save_data(data)
+else:
+    nickname = data['nickname']
+highscore = data['highscore']
+
+# Основной игровой цикл
 while running:
     clock.tick(60)
     screen.fill((0, 0, 0))

@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Минималистичная гонка")
 clock = pygame.time.Clock()
 
-game_state = 'nickname'
+game_state = 'menu'
 
 lanes = [150, 300, 450]
 
@@ -89,6 +89,9 @@ while running:
                     current_lane -= 1
                 if event.key == pygame.K_RIGHT and current_lane < 2:
                     current_lane += 1
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_p:
+                        game_state = 'pause'
 
             if event.type == spawn_event:
                 lane = random.choice(lanes)
@@ -103,6 +106,18 @@ while running:
                 enemy_speed = 5
                 enemies.clear()
                 current_lane = 1
+
+        elif game_state == 'menu':
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    game_state = 'nickname'
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+        elif game_state == 'pause':
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    game_state = 'game'
 
     if game_state == 'game':
         speed_increase_timer += 1
@@ -161,6 +176,23 @@ while running:
                     highscore_text.get_width()//2, 300))
         screen.blit(restart_text, (WIDTH//2 -
                     restart_text.get_width()//2, 500))
+
+    elif game_state == 'menu':
+        title = font_big.render("MINI RACE", True, (255, 255, 255))
+        play_text = font_small.render("ENTER - Играть", True, (255, 255, 255))
+        quit_text = font_small.render("ESC - Выход", True, (255, 255, 255))
+
+        screen.blit(title, (WIDTH//2 - title.get_width()//2, 150))
+        screen.blit(play_text, (WIDTH//2 - play_text.get_width()//2, 300))
+        screen.blit(quit_text, (WIDTH//2 - quit_text.get_width()//2, 350))
+
+    elif game_state == 'pause':
+        pause_text = font_big.render("ПАУЗА", True, (255, 255, 0))
+        continue_text = font_small.render(
+            "Нажмите P чтобы продолжить", True, (255, 255, 255))
+        screen.blit(pause_text, (WIDTH//2 - pause_text.get_width()//2, 200))
+        screen.blit(continue_text, (WIDTH//2 -
+                    continue_text.get_width()//2, 300))
 
     pygame.display.flip()
 

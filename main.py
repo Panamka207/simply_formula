@@ -9,10 +9,13 @@ pygame.init()
 # Размеры окна
 WIDTH = 600
 HEIGHT = 600
+SAVE_FILE = 'save.json'
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Минималистичная гонка")
 
 clock = pygame.time.Clock()
+
+game_state = 'nickname'
 
 # Линии
 lanes = [150, 300, 450]
@@ -48,16 +51,14 @@ game_over = False
 
 
 def load_data():
-    if os.path.exists('save.json'):
-        with open('save.json', 'r') as f:
-            data = json.load(f)
-            return data.get('highscore', 0)
+    if os.path.exists(SAVE_FILE):
+        with open(SAVE_FILE, 'r') as f:
+            return json.load(f)
     return None
 
 
 def save_data(data):
-    data = {'highscore': data}
-    with open('save.json', 'w') as f:
+    with open(SAVE_FILE, 'w') as f:
         json.dump(data, f)
 
 
@@ -66,13 +67,16 @@ highscore = load_data()
 
 # Загрузка профиля
 data = load_data()
-if data is not None:
+if data is None:
     nickname = input("Введите ваш никнейм: ")
     data = {'nickname': nickname, 'highscore': 0}
     save_data(data)
-else:
-    nickname = data['nickname']
+
+nickname = data['nickname']
 highscore = data['highscore']
+
+nickname_input = ''
+font = pygame.font.SysFont(None, 50)
 
 # Основной игровой цикл
 while running:
@@ -83,6 +87,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if game_state == 'nickname':
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and nickname_input != '':
+                    data['nickname'] = nickname
+                    save_data(data)
+                    nickname = nickname_input
+                    game_state = 'game'
+                elif event.key == pygame.K_BACKSPACE:
+                    nickname_input = nickname_input[:-1]
+                else:
+                    if len(nickname_input) < 10:  # Ограничение длины никнейма
+                        nickname_input += event.unicode
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT and current_lane > 0:
@@ -108,6 +125,13 @@ while running:
             enemies.append(enemy)
 
     if not game_over:
+        if game_state == 'nickname':
+            screen.fill((0, 0, 0))
+            text = font.render('Введите никнейм:', True, (255, 255, 255))
+            screen.blit(text, (200, 200))
+            name_surface = font.render(nickname_input, True, (0, 255, 0))
+            screen.blit(name_surface, (200, 260))
+
         speed_incrase_timer += 1
 
         if speed_incrase_timer > 300:
@@ -133,7 +157,8 @@ while running:
                 game_over = True
                 if score > highscore:
                     highscore = score
-                    save_highscore(highscore)
+                    data['highscore'] = highscore
+                    save_data(data)
 
         # Удаление врагов за экраном
         enemies = [e for e in enemies if e['rect'].y < HEIGHT]

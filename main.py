@@ -37,11 +37,14 @@ enemy_width = 60
 enemy_height = 100
 enemy_speed = 5
 
+speed_incrase_timer = 0
+
 # Таймер спавна
 spawn_event = pygame.USEREVENT + 1
 pygame.time.set_timer(spawn_event, 1000)
 
 running = True
+game_over = False
 
 while running:
     clock.tick(60)
@@ -70,6 +73,12 @@ while running:
 
             enemies.append(enemy)
 
+    speed_incrase_timer += 1
+
+    if speed_incrase_timer > 300:
+        enemy_speed = 5 + score * 0.1
+        speed_incrase_timer = 0
+
     # Обновление позиции игрока
     player_rect.x = lanes[current_lane] - player_width // 2 + 1
 
@@ -86,7 +95,7 @@ while running:
     for enemy in enemies:
         if player_rect.colliderect(enemy['rect']):
             print("Игра окончена")
-            running = False
+            game_over = False
 
     # Удаление врагов за экраном
     enemies = [e for e in enemies if e['rect'].y < HEIGHT]

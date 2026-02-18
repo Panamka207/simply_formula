@@ -6,6 +6,23 @@ import os
 
 pygame.init()
 
+
+def load_cars(path, size):
+    cars = {}
+    for car_folder in os.listdir(path):
+        car_path = os.path.join(path, car_folder)
+        if os.path.isdir(car_path):
+            frames = []
+            for file in sorted(os.listdir(car_path)):
+                if file.endswith(".png"):
+                    img = pygame.image.load(os.path.join(
+                        car_path, file)).convert_alpha()
+                    img = pygame.transform.scale(img, size)
+                    frames.append(img)
+            cars[car_folder] = frames
+    return cars
+
+
 WIDTH = 600
 HEIGHT = 600
 SAVE_FILE = 'save.json'
@@ -56,6 +73,17 @@ nickname = data['nickname']
 highscore = data['highscore']
 
 nickname_input = ''
+# Загружаем все машины
+CAR_SIZE = (60, 100)
+cars = load_cars("assets/cars", CAR_SIZE)
+
+# Выбор машины игрока (пока вручную)
+selected_car = "car1"
+player_frames = cars[selected_car]
+player_animation_index = 0
+
+# Список имён машин для врагов
+enemy_car_names = [name for name in cars if name != selected_car]
 font = pygame.font.SysFont(None, 50)
 font_big = pygame.font.SysFont(None, 80)
 font_small = pygame.font.SysFont(None, 40)
@@ -90,11 +118,21 @@ while running:
                 if event.key == pygame.K_RIGHT and current_lane < 2:
                     current_lane += 1
 
-            if event.type == spawn_event:
-                lane = random.choice(lanes)
-                enemy_rect = pygame.Rect(0, -100, enemy_width, enemy_height)
-                enemy_rect.centerx = lane
-                enemies.append({'rect': enemy_rect, 'counted': False})
+        elif event.type == spawn_event:
+            lane = random.choice(lanes)
+            enemy_rect = pygame.Rect(0, -100, enemy_width, enemy_height)
+            enemy_rect.centerx = lane
+
+            # Выбираем рандомный скин для врага
+            enemy_name = random.choice(enemy_car_names)
+            enemy_frames = cars[enemy_name]
+
+            enemies.append({
+                'rect': enemy_rect,
+                'frames': enemy_frames,
+                'anim': 0,
+                'counted': False
+            })
 
         elif game_state == 'game_over':
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
@@ -132,10 +170,20 @@ while running:
             pygame.draw.line(screen, (50, 50, 50),
                              (lane, 0), (lane, HEIGHT), 2)
 
-        pygame.draw.rect(screen, (255, 0, 0), player_rect)
+        # Анимация игрока
+        player_animation_index += 0.2
+        if player_animation_index >= len(player_frames):
+            player_animation_index = 0
+        current_player_img = player_frames[int(player_animation_index)]
+        screen.blit(current_player_img, player_rect)
 
         for enemy in enemies:
-            pygame.draw.rect(screen, (255, 255, 255), enemy['rect'])
+            # Анимация врага
+            enemy['anim'] += 0.2
+            if enemy['anim'] >= len(enemy['frames']):
+                enemy['anim'] = 0
+            current_enemy_img = enemy['frames'][int(enemy['anim'])]
+            screen.blit(current_enemy_img, enemy['rect'])
 
         score_text = font_small.render(f'Счет: {score}', True, (255, 255, 255))
         screen.blit(score_text, (20, 20))

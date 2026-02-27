@@ -10,7 +10,7 @@ pygame.init()
 WIDTH = 600
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Минималистичная гонка")
+pygame.display.set_caption("Simply Formula")
 
 clock = pygame.time.Clock()
 
@@ -210,7 +210,7 @@ while running:
                              (lane, 0), (lane, HEIGHT), 2)
 
         # игрок (анимация)
-        player_anim_index += 0.2
+        player_anim_index += 0.15
         if player_anim_index >= len(player_frames):
             player_anim_index = 0
         current_player_img = player_frames[int(player_anim_index)]
@@ -218,7 +218,7 @@ while running:
 
         # враги (анимация)
         for enemy in enemies:
-            enemy['anim'] += 0.2
+            enemy['anim'] += 0.15
             if enemy['anim'] >= len(enemy['frames']):
                 enemy['anim'] = 0
             current_enemy_img = enemy['frames'][int(enemy['anim'])]

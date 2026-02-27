@@ -128,15 +128,6 @@ while running:
 
         # управление в игре
         elif game_state == 'game':
-            # --- движение фона ---
-            bg_y += bg_speed
-            if bg_y >= HEIGHT:
-                bg_y = 0
-
-            # --- рисуем два фона для бесконечного скролла ---
-            screen.blit(bg_image, (0, bg_y))
-            screen.blit(bg_image, (0, bg_y - HEIGHT))
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT and current_lane > 0:
                     current_lane -= 1
@@ -217,6 +208,15 @@ while running:
 
     # ======= ОТРИСОВКА =======
     if game_state == 'game':
+        # -- движение фона --
+        bg_y += bg_speed
+        if bg_y >= HEIGHT:
+            bg_y = 0
+
+        # -- отрисовка двух частей для бесконечного скролла --
+        screen.blit(bg_image, (0, bg_y))
+        screen.blit(bg_image, (0, bg_y - HEIGHT))
+
         # линии
         for lane in lanes:
             pygame.draw.line(screen, (50, 50, 50),
@@ -243,12 +243,14 @@ while running:
 
     # ======= ЭКРАНЫ =======
     elif game_state == 'nickname':
+        screen.fill((0, 0, 0))
         text = font.render('Введите никнейм:', True, (255, 255, 255))
         screen.blit(text, (150, 200))
         name_surface = font.render(nickname_input, True, (0, 255, 0))
         screen.blit(name_surface, (150, 260))
 
     elif game_state == 'game_over':
+        screen.fill((0, 0, 0))
         game_over_text = font_big.render('Игра окончена', True, (255, 0, 0))
         restart_text = font_small.render(
             'Нажмите R чтобы начать заново', True, (255, 255, 255))
@@ -265,6 +267,7 @@ while running:
                     restart_text.get_width()//2, 500))
 
     elif game_state == 'menu':
+        screen.fill((0, 0, 0))
         title = font_big.render("Simply Formula", True, (255, 255, 255))
         play_text = font_small.render("ENTER - Играть", True, (255, 255, 255))
         quit_text = font_small.render("ESC - Выход", True, (255, 255, 255))
@@ -274,6 +277,7 @@ while running:
         screen.blit(quit_text, (WIDTH//2 - quit_text.get_width()//2, 350))
 
     elif game_state == 'pause':
+        screen.fill((0, 0, 0))
         pause_text = font_big.render("ПАУЗА", True, (255, 255, 0))
         continue_text = font_small.render(
             "Нажмите P чтобы продолжить", True, (255, 255, 255))

@@ -10,6 +10,11 @@ pygame.init()
 WIDTH = 600
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# --- Загрузка фона ---
+bg_image = pygame.image.load('./assets/images/background.png').convert()
+bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
+bg_y = 0
+bg_speed = 5   # скорость движения фона
 pygame.display.set_caption("Simply Formula")
 
 clock = pygame.time.Clock()
@@ -102,7 +107,6 @@ running = True
 # ========== ОСНОВНОЙ ЦИКЛ ==========
 while running:
     clock.tick(60)
-    screen.fill((0, 0, 0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -124,6 +128,15 @@ while running:
 
         # управление в игре
         elif game_state == 'game':
+            # --- движение фона ---
+            bg_y += bg_speed
+            if bg_y >= HEIGHT:
+                bg_y = 0
+
+            # --- рисуем два фона для бесконечного скролла ---
+            screen.blit(bg_image, (0, bg_y))
+            screen.blit(bg_image, (0, bg_y - HEIGHT))
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT and current_lane > 0:
                     current_lane -= 1

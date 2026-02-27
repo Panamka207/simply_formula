@@ -209,7 +209,7 @@ while running:
     # ======= ОТРИСОВКА =======
     if game_state == 'game':
         # -- движение фона --
-        bg_y += bg_speed
+        bg_y += enemy_speed
         if bg_y >= HEIGHT:
             bg_y = 0
 

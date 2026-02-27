@@ -189,7 +189,7 @@ while running:
 
         # движение врагов
         for enemy in enemies:
-            enemy['rect'].y += enemy_speed
+            # enemy['rect'].y += enemy_speed
 
             if enemy['rect'].y > player_y and not enemy['counted']:
                 score += 1

@@ -252,7 +252,7 @@ while running:
                     restart_text.get_width()//2, 500))
 
     elif game_state == 'menu':
-        title = font_big.render("MINI RACE", True, (255, 255, 255))
+        title = font_big.render("Simply Formula", True, (255, 255, 255))
         play_text = font_small.render("ENTER - Играть", True, (255, 255, 255))
         quit_text = font_small.render("ESC - Выход", True, (255, 255, 255))
 

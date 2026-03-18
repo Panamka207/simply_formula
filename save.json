@@ -1,1 +1,1 @@
-{"nickname": "abr", "highscore": 2}
+{"players": {"abr": {"highscore": 2, "coins": 0, "owned_cars": ["car1"]}, "reg": {"highscore": 10, "coins": 10, "owned_cars": ["car1", "car2"]}, "ljhf": {"highscore": 95, "coins": 190, "owned_cars": ["car1", "car2"]}, "\u043f\u0430": {"highscore": 0, "coins": 0, "owned_cars": ["car1"]}}}

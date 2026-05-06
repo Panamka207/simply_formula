@@ -457,12 +457,30 @@ def handle_events():
 
         elif game_state == 'game':
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and gs.current_lane > 0:
-                    gs.current_lane -= 1
-                    play(snd_click)
-                elif event.key == pygame.K_RIGHT and gs.current_lane < 2:
-                    gs.current_lane += 1
-                    play(snd_click)
+                if event.key == pygame.K_LEFT:
+                    if gs.current_lane > 0:
+                        gs.current_lane -= 1
+                        play(snd_click)
+                    else:
+                        play(snd_crash)
+                        game_state = 'game_over'
+                        pygame.time.set_timer(spawn_event, 0)
+                        if gs.score > profile['highscore']:
+                            profile['highscore'] = gs.score
+                        all_players[current_nick] = profile
+                        save_all_players(all_players)
+                elif event.key == pygame.K_RIGHT:
+                    if gs.current_lane < 2:
+                        gs.current_lane += 1
+                        play(snd_click)
+                    else:
+                        play(snd_crash)
+                        game_state = 'game_over'
+                        pygame.time.set_timer(spawn_event, 0)
+                        if gs.score > profile['highscore']:
+                            profile['highscore'] = gs.score
+                        all_players[current_nick] = profile
+                        save_all_players(all_players)
                 elif event.key == pygame.K_p:
                     play(snd_click)
                     game_state = 'pause'
